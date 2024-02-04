@@ -6,8 +6,11 @@ import { HotelsApiAdminController } from './hotelsApiAdmin.controller';
 import { HotelsApiService } from './hotelsApi.service';
 
 @Module({
-  imports: [HotelsModule],
-  controllers: [HotelsApiAdminController, HotelsApiCommonController],
-  providers: [HotelsApiService],
+    imports: [HotelsModule],
+    controllers: [
+        HotelsApiAdminController,
+        HotelsApiCommonController
+    ],
+    providers: [HotelsApiService]
 })
 export class HotelsApiModule {}

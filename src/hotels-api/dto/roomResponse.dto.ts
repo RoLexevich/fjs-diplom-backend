@@ -1,22 +1,19 @@
 import { ID } from 'src/types/id';
 
 class Hotel {
-  id: ID;
+    id: ID;
 
-  title: string;
+    title: string;
 
-  description?: string;
+    description?: string;
 }
 
 export class RoomResponseDto {
-  id: ID;
-
-  description: string;
-
-  images: string[];
-
-
-  isEnabled?: boolean;
-
-  hotel: Hotel;
+    id: ID;
+    description: string;
+    updatedAt?: Date;
+    createdAt: Date;
+    images: string[];
+    isEnabled?: boolean;
+    hotel: Hotel;
 }

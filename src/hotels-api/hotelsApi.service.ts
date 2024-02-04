@@ -22,6 +22,8 @@ interface IRoomParams {
     description: string;
     hotel: Types.ObjectId;
     images: string[];
+    createdAt: Date;
+    updatedAt: Date
 }
 
 @Injectable()
@@ -39,11 +41,13 @@ export class HotelsApiService {
                 ...query
             })) as (HotelRoomDocument & { hotel: HotelDocument })[];
             return rooms.map((room) => {
-                const { id, description, images, hotel } = room;
+                const { id, description, images, hotel, createdAt, updatedAt } = room;
                 return {
                     id,
                     description,
                     images,
+                    createdAt,
+                    updatedAt,
                     hotel: {
                         id: hotel.id,
                         title: hotel.title
@@ -61,7 +65,9 @@ export class HotelsApiService {
                 id: roomId,
                 description,
                 images,
-                hotel
+                hotel,
+                createdAt,
+                updatedAt,
             } = (await this.hotelsRoomsService.findById(
                 id
             )) as HotelRoomDocument & {
@@ -71,6 +77,8 @@ export class HotelsApiService {
                 id: roomId,
                 description,
                 images,
+                createdAt,
+                updatedAt,
                 hotel: {
                     id: hotel.id,
                     description: hotel.description,
@@ -86,13 +94,17 @@ export class HotelsApiService {
         createHotelDto: CreateHotelDto
     ): Promise<HotelResponseDto> {
         try {
-            const { id, title, description } = (await this.hotelsService.create(
+            createHotelDto.createdAt = new Date();
+            createHotelDto.updatedAt = createHotelDto.createdAt;
+            const { id, title, description, createdAt, updatedAt } = (await this.hotelsService.create(
                 createHotelDto
             )) as HotelDocument;
             return {
                 id,
                 title,
-                description
+                description,
+                createdAt,
+                updatedAt
             };
         } catch (e) {
             throw new InternalServerErrorException(
@@ -109,11 +121,13 @@ export class HotelsApiService {
                 getHotelsQueryDto
             )) as HotelDocument[];
             return hotels.map((hotel) => {
-                const { id, title, description } = hotel;
+                const { id, title, description, createdAt, updatedAt } = hotel;
                 return {
                     id,
                     title,
-                    description
+                    description,
+                    createdAt,
+                    updatedAt
                 };
             });
         } catch (e) {
@@ -131,12 +145,16 @@ export class HotelsApiService {
             const {
                 id: hotelId,
                 title,
-                description
+                description,
+                updatedAt,
+                createdAt,
             } = (await this.hotelsService.update(hotel, rest)) as HotelDocument;
             return {
                 id: hotelId,
                 title,
-                description
+                description,
+                createdAt,
+                updatedAt
             };
         } catch (e) {
             throw new InternalServerErrorException(
@@ -154,6 +172,8 @@ export class HotelsApiService {
             const roomParams: IRoomParams = {
                 hotel: hotelId as Types.ObjectId,
                 images: imagesFilenames,
+                createdAt: new Date(),
+                updatedAt: new Date(),
                 ...rest
             };
             const room = (await this.hotelsRoomsService.create(
@@ -170,6 +190,7 @@ export class HotelsApiService {
                 description: room.description,
                 isEnabled: room.isEnabled,
                 images: room.images,
+                createdAt: room.createdAt,
                 hotel: {
                     id: room.hotel,
                     title: hotel.title,
@@ -186,18 +207,22 @@ export class HotelsApiService {
     ): Promise<RoomResponseDto | null> {
         try {
             const { room, ...rest } = updateRoomDto;
+            rest.updatedAt = new Date();
             const {
                 id: roomId,
                 description,
                 images,
                 isEnabled,
-                hotel
+                updatedAt,
+                hotel,
+                createdAt
             } = (await this.hotelsRoomsService.update(
                 room,
                 rest as {
                     description: string;
                     hotel: Types.ObjectId;
                     isEnabled: boolean;
+                    updatedAt: Date;
                     images: Array<string>;
                 }
             )) as HotelRoomDocument & { hotel: HotelDocument };
@@ -206,6 +231,8 @@ export class HotelsApiService {
                 description,
                 images,
                 isEnabled,
+                createdAt,
+                updatedAt,
                 hotel: {
                     id: hotel.id,
                     description: hotel.description,
